@@ -46,7 +46,7 @@
 
     <script type="text/javascript">
         document.addEventListener("DOMContentLoaded", function () {
-            const broker = "ws://broker.emqx.io:8083/mqtt";  
+            const broker = "wss://broker.emqx.io:8084/mqtt";  
             const clientId = "mqtt_web_" + Math.random().toString(16).substr(2, 8); // Random client ID
             const topicBluetooth = "bluetooth/status";
             const topicWiFi = "wifi/status";
