@@ -45,45 +45,48 @@
     </div>
 
     <script type="text/javascript">
-        const broker = "ws://broker.emqx.io:8083/mqtt";  
-        const clientId = "mqtt_web_" + Math.random().toString(16).substr(2, 8); // Random client ID
-        const topicBluetooth = "bluetooth/status";
-        const topicWiFi = "wifi/status";
-
-        const client = mqtt.connect(broker, {
-            clientId: clientId,
-            keepalive: 60
+        document.addEventListener("DOMContentLoaded", function () {
+            const broker = "ws://broker.emqx.io:8083/mqtt";  
+            const clientId = "mqtt_web_" + Math.random().toString(16).substr(2, 8); // Random client ID
+            const topicBluetooth = "bluetooth/status";
+            const topicWiFi = "wifi/status";
+    
+            const client = mqtt.connect(broker, {
+                clientId: clientId,
+                keepalive: 60
+            });
+    
+            client.on("connect", function () {
+                console.log("Connected to MQTT Broker!");
+            });
+    
+            client.on("error", function (err) {
+                console.log("MQTT Error: ", err);
+            });
+    
+            function handleToggle(event, topic) {
+                let status = event.target.checked ? "1" : "0";
+                let messageText = `Published to ${topic}: ${status}`;
+                console.log(messageText);
+    
+                client.publish(topic, status, { qos: 0, retain: true });
+    
+                // Show in message box
+                const messageList = document.getElementById("message-list");
+                const listItem = document.createElement("li");
+                listItem.textContent = messageText;
+                messageList.appendChild(listItem);
+            }
+    
+            document.getElementById("bluetooth-toggle").addEventListener("change", function(event) {
+                handleToggle(event, topicBluetooth);
+            });
+    
+            document.getElementById("wifi-toggle").addEventListener("change", function(event) {
+                handleToggle(event, topicWiFi);
+            });
         });
-
-        client.on("connect", function () {
-            console.log("Connected to MQTT Broker!");
-        });
-
-        client.on("error", function (err) {
-            console.log("MQTT Error: ", err);
-        });
-
-        function handleToggle(event, topic) {
-            let status = event.target.checked ? "1" : "0";
-            let messageText = `Published to ${topic}: ${status}`;
-            console.log(messageText);
-
-            client.publish(topic, status, { qos: 0, retain: true });
-
-            // Show in message box
-            const messageList = document.getElementById("message-list");
-            const listItem = document.createElement("li");
-            listItem.textContent = messageText;
-            messageList.appendChild(listItem);
-        }
-
-        document.getElementById("bluetooth-toggle").addEventListener("change", function(event) {
-            handleToggle(event, topicBluetooth);
-        });
-
-        document.getElementById("wifi-toggle").addEventListener("change", function(event) {
-            handleToggle(event, topicWiFi);
-        });
+        
     </script>
 
 </body>
